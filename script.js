@@ -6,6 +6,7 @@ const suits = ['S', 'H', 'C', 'D'];
 const deck= [];
 const playerHand= [];
 const dealerHand= [];
+const pscore= 0;
 // create code for ace to equal 11 at first then one once 11 makes hand over 21
 
 
@@ -20,11 +21,12 @@ function createDeck()
             if (values[i] == "J" || values[i] == "Q" || values[i] == "K")
                 weight = 10;
             if (values[i] == "A")
-                weight = 11; //needs to also equal 1.
+                weight = pscore <= 10 ? 11 : 1;
             var card = { Value: values[i], Suit: suits[x], Weight: weight };
             deck.push(card);
         }
     }
+    console.log(deck);
     return deck;
 };
 let random = () => Math.floor(deck.length * Math.random());
@@ -41,16 +43,19 @@ img.src = `${card}.png`;
 console.log(deck);
 //2) create a deal function
 window.onload = () => {
-    document.getElementById("start").onclick = () => {
+    console.log(document.querySelector("#start"))
+    document.querySelector("#start").onclick = () => {
+    console.log("start game");
       startGame();
     };
-startGame() 
-{
-    dealCards() 
-}
 };
-
-dealCards()
+function startGame() 
+{
+    console.log('starting game')
+    createDeck();
+    dealCards() 
+};
+function dealCards()
  {
     //2 random cards to dealer and player
     const phand= playerHand.push; //phand needs to be an array and I need to push 2 random cards in it;
@@ -64,9 +69,10 @@ document.getElementById("reset").onclick = () => {
     );
 };
 //3) create a hit me function
-
-/*const playerHand= [] of 2 random cards
-function hitMe push random card into player hand array*/
+/*function hitMe()
+{
+    return phand.push;
+}*/
 
 //4) create a stay function
 
@@ -83,6 +89,7 @@ dealer hand >= 17 dealer must stay
 dealer hand > 21- player wins
 dealer hand but 21 or less > player hand- dealer wins
 dealer hand = player hand- tie*/
+// suggestion logic if phand < 16, hit, if phand > 16 stay
 
 // extra stuff if I have time:
 // add split and double down features 
