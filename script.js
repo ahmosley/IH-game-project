@@ -7,6 +7,9 @@ const deck= [];
 const playerHand= [];
 const dealerHand= [];
 const pscore= 0;
+const dscore=0;
+const img = new Image();
+
 // create code for ace to equal 11 at first then one once 11 makes hand over 21
 
 
@@ -22,7 +25,7 @@ function createDeck()
                 weight = 10;
             if (values[i] == "A")
                 weight = pscore <= 10 ? 11 : 1;
-            var card = { Value: values[i], Suit: suits[x], Weight: weight };
+            var card = { Value: values[i], Suit: suits[x], Weight: weight, image: `./${values[i]}${suits[x]}.png` };
             deck.push(card);
         }
     }
@@ -38,58 +41,112 @@ deck.forEach((card, index) => {
   deck[randomIndex], deck[index] = [deck[index], deck[randomIndex]];
 }) 
 const card = deck[0];
-const img = new Image();
-img.src = `${card}.png`;
-console.log(deck);
 //2) create a deal function
-window.onload = () => {
-    console.log(document.querySelector("#start"))
-    document.querySelector("#start").onclick = () => {
-    console.log("start game");
-      startGame();
+    window.onload = () => {
+        document.querySelector("#start").onclick = () => {
+            console.log("start game");
+            startGame();
+        };
     };
-};
-function startGame() 
-{
-    console.log('starting game')
-    createDeck();
-    dealCards() 
-};
-function dealCards()
- {
-    //2 random cards to dealer and player
-    const phand= playerHand.push; //phand needs to be an array and I need to push 2 random cards in it;
-    const dhand= dealerHand.push; //dhand needs to be an array w/ 1 random card and one face down card to start off but the face down card eventually gets revealed
+    function startGame() {
+        console.log('starting game')
+        createDeck();
+        setHandforPlayers();
+        dealCards(); 
+    };
+    function setHandforPlayers() {
+    for (i=0; i< 2; i++){
+        playerHand.push(deck[0]); // add to hit function may need to add a conditional as well
+        deck.splice(0, 1);
+        dealerHand.push(deck[0]);
+        deck.splice(0, 1);
+    }
 
-    //1 of dealer cards is face down
-};
-document.getElementById("reset").onclick = () => {
-    newGame(
-    // return blank screen
-    );
-};
+    }
+    function dealCards()
+    {
+        //2 random cards to dealer and player
+        // playerHandCard1= document.getElementById("p1") //.concat.valuesuit.png
+        // playerHandCard2= document.getElementById("p2") //.concat.valuesuit.png
+        //phand needs to be an array and I need to push 2 random cards in it;
+        // dealerHandCard1= document.getElementById("#d1") //.concat.valuesuit.png
+        // dealerHandCard2= document.getElementById("#d2") //.concat.valuesuit.png
+        //dhand needs to be an array w/ 1 random card and one face down card to start off but the face down card eventually gets revealed
+        // concatanate ./valuesuit.png
+        //1 of dealer cards is face down
+
+        playerHand.forEach((card, i) => {
+            const playerHandCard = document.getElementById(`phand`);
+            playerHandCard.innerHTML = '';
+
+            addCardImage(playerHandCard, card)
+        })
+
+        dealerHand.forEach((card, i) => {
+            const dealerHandCard = document.getElementById(`dhand`);
+            dealerHandCard.innerHTML = '';
+
+            addCardImage(dealerHandCard, card)
+        })
+
+    };
+
+    function addCardImage(listLocation, card) {
+        let img = document.createElement('img');
+        img.src = card.image
+        listLocation.appendChild(img)
+    }
+
+    window.onload = () => {
+        document.querySelector("#reset").onclick = () => {
+           console.log("new game");
+           
+    };
+    };
+    
+
+    // suggestion logic:
+    //f suggestAMove () 
+    //document.getElementById("#suggestion")
+    
+
+
+
 //3) create a hit me function
-/*function hitMe()
+function hitMe()
 {
-    return phand.push;
-}*/
+    phand.push(card); return sum(card.weight + pscore);
+}
 
 //4) create a stay function
 
 function stay() 
-{return "Your turn is over. Dealer's turn";}
+{return "Your turn is over. Dealer's turn"
+};
  //then proceed to dealer turn
 
-/*4.5) dealer rules
-dealer hand =< 16- dealer must hit
-dealer hand >= 17 dealer must stay
+//4.5) dealer rules
+//dealer hand =< 16- dealer must hit
+function dealersMove() {
+   if (dscore <= 17){
+       return dealerHand.push(card);
+   } else return endOfGame()
+};
+function endOfGame () {
+    if (dscore== 21){
+        return "The Dealer has 21. You lose!"
+            } else if (dscore > pscore) {
+                return "The Dealer wins."
+            } else if (dscore > 21) {
+                return "The Dealer busted. You win."
+            } else {
+                return "You beat the Dealer"
+            }
+};
+//dealer hand >= 17 dealer must stay
 
 
-//5) create win/lose logic
-dealer hand > 21- player wins
-dealer hand but 21 or less > player hand- dealer wins
-dealer hand = player hand- tie*/
-// suggestion logic if phand < 16, hit, if phand > 16 stay
+
 
 // extra stuff if I have time:
 // add split and double down features 
