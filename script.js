@@ -1,154 +1,163 @@
 //necessary for project
 
 //1) build the deck of cards
-const values = [2, 3, 4, 5, 6, 7, 8, 9, 10 , 'A', 'J', 'Q', 'K'];
-const suits = ['S', 'H', 'C', 'D'];
-const deck= [];
-const playerHand= [];
-const dealerHand= [];
-const pscore= 0;
-const dscore=0;
+const values = [2, 3, 4, 5, 6, 7, 8, 9, 10, "A", "J", "Q", "K"];
+const suits = ["S", "H", "C", "D"];
+let deck = createDeck();
+let playerHand = [];
+let dealerHand = [];
+let pscore = 0;
+let dscore = 0;
 const img = new Image();
+img.src= '/cards';
 
 // create code for ace to equal 11 at first then one once 11 makes hand over 21
 
-
-function createDeck()
-{
-    var deck = new Array();
-    for (var i = 0 ; i < values.length; i++)
-    {
-        for(var x = 0; x < suits.length; x++)
-        {
-            var weight = parseInt(values[i]);
-            if (values[i] == "J" || values[i] == "Q" || values[i] == "K")
-                weight = 10;
-            if (values[i] == "A")
-                weight = pscore <= 10 ? 11 : 1;
-            var card = { Value: values[i], Suit: suits[x], Weight: weight, image: `./${values[i]}${suits[x]}.png` };
-            deck.push(card);
-        }
+function createDeck() {
+  var deck = new Array();
+  for (var i = 0; i < values.length; i++) {
+    for (var x = 0; x < suits.length; x++) {
+      var weight = values[i];
+      if (weight == "J" || weight == "Q" || weight == "K") weight = 10;
+      if (weight == "A") weight = 11;
+      var card = {
+        Value: values[i],
+        Suit: suits[x],
+        Weight: weight,
+        image: `./cards/${values[i]}${suits[x]}.png`,
+      };
+      deck.push(card);
     }
-    console.log(deck);
-    return deck;
+  }
+  return deck;
 };
 let random = () => Math.floor(deck.length * Math.random());
 deck.forEach((card, index) => {
   const randomIndex = random();
-  const randomCard = deck[randomIndex];
-  deck[randomIndex] = card;
- deck[index] = randomCard;
-  deck[randomIndex], deck[index] = [deck[index], deck[randomIndex]];
-}) 
+  // const randomCard = deck[randomIndex];
+  // deck[randomIndex] = card;
+  // deck[index] = randomCard;
+  [deck[randomIndex], deck[index]] = [deck[index], deck[randomIndex]];
+});
 const card = deck[0];
+
 //2) create a deal function
-    window.onload = () => {
-        document.querySelector("#start").onclick = () => {
-            console.log("start game");
-            startGame();
-        };
-    };
-    function startGame() {
-        console.log('starting game')
-        createDeck();
-        setHandforPlayers();
-        dealCards(); 
-    };
-    function setHandforPlayers() {
-    for (i=0; i< 2; i++){
-        playerHand.push(deck[0]); // add to hit function may need to add a conditional as well
-        deck.splice(0, 1);
-        dealerHand.push(deck[0]);
-        deck.splice(0, 1);
-    }
 
-    }
-    function dealCards()
-    {
-        //2 random cards to dealer and player
-        // playerHandCard1= document.getElementById("p1") //.concat.valuesuit.png
-        // playerHandCard2= document.getElementById("p2") //.concat.valuesuit.png
-        //phand needs to be an array and I need to push 2 random cards in it;
-        // dealerHandCard1= document.getElementById("#d1") //.concat.valuesuit.png
-        // dealerHandCard2= document.getElementById("#d2") //.concat.valuesuit.png
-        //dhand needs to be an array w/ 1 random card and one face down card to start off but the face down card eventually gets revealed
-        // concatanate ./valuesuit.png
-        //1 of dealer cards is face down
+window.onload = () => {
+  document.querySelector("#start").onclick = () => {
+    startGame();
+  };
+};
+function startGame() {
+  console.log("starting game");
+  createDeck();
+  setHandforPlayers();
+  dealCards();
+};
+function setHandforPlayers() {
+  for (i = 0; i < 2; i++) {
+    drawCard(playerHand); // add to hit function may need to add a conditional as well
+    drawCard(dealerHand);
+  }
+};
 
-        playerHand.forEach((card, i) => {
-            const playerHandCard = document.getElementById(`phand`);
-            playerHandCard.innerHTML = '';
+function drawCard(hand) {
+  const theCard = deck.splice(0, 1)[0];
+  hand.push(theCard);
+}
 
-            addCardImage(playerHandCard, card)
-        })
+function dealCards() {
+  console.log(playerHand, dealerHand)
+  const playerHandCard = document.getElementById(`phand`);
+  playerHandCard.innerHTML = "";
+  pscore = 0;
+  playerHand.forEach((card, i) => {
+    pscore += card.Weight;
+    addCardImage(playerHandCard, card);
+  });
 
-        dealerHand.forEach((card, i) => {
-            const dealerHandCard = document.getElementById(`dhand`);
-            dealerHandCard.innerHTML = '';
+  const dealerHandCard = document.getElementById(`dhand`);
+  dealerHandCard.innerHTML = "";
+  console.log(dealerHand);
+  dscore = 0;
+  dealerHand.forEach((card, i) => {
+    dscore += card.Weight;
+    addCardImage(dealerHandCard, card);
+  }); 
+  displayScore(dscore, 'dscore');
+  displayScore(pscore, 'pscore');
 
-            addCardImage(dealerHandCard, card)
-        })
+};
+function displayScore(score, who) {
+  let scoreElement = document.getElementById(who);
+  scoreElement.innerText = score;
+}
 
-    };
+function addCardImage(listLocation, card) {
+  let img = document.createElement("img");
+  img.src = card.image;
+  img.style.height = '100px'
+  listLocation.appendChild(img);
+};
 
-    function addCardImage(listLocation, card) {
-        let img = document.createElement('img');
-        img.src = card.image
-        listLocation.appendChild(img)
-    }
+document.querySelector('#reset').onclick = () => {
+  let playerHand = [];
+let dealerHand = [];
+let pscore = 0;
+let dscore = 0;
+createDeck();
+};
 
-    window.onload = () => {
-        document.querySelector("#reset").onclick = () => {
-           console.log("new game");
-           
-    };
-    };
-    
-
-    // suggestion logic:
-    //f suggestAMove () 
-    //document.getElementById("#suggestion")
-    
-
-
+// suggestion logic:
+//f suggestAMove ()
+//document.getElementById("#suggestion")
 
 //3) create a hit me function
-function hitMe()
-{
-    phand.push(card); return sum(card.weight + pscore);
-}
+document.querySelector("#hit").onclick = () => {
+  drawCard(playerHand);
+  dealCards()
+  playerLoss();
+};
+function playerLoss(){
+  if (pscore > 21)
+  return "Player loses";
+
+};
 
 //4) create a stay function
 
-function stay() 
-{return "Your turn is over. Dealer's turn"
-};
- //then proceed to dealer turn
+
+  document.querySelector('#stay').onclick = () => {
+    dealersMove();
+  };
+//then proceed to dealer turn
 
 //4.5) dealer rules
 //dealer hand =< 16- dealer must hit
 function dealersMove() {
-   if (dscore <= 17){
-       return dealerHand.push(card);
-   } else return endOfGame()
+  if (dscore <= 16) {
+    drawCard(dealerHand);
+    dealCards();
+    dealersMove();
+  } else return endOfGame();
 };
-function endOfGame () {
-    if (dscore== 21){
-        return "The Dealer has 21. You lose!"
-            } else if (dscore > pscore) {
-                return "The Dealer wins."
-            } else if (dscore > 21) {
-                return "The Dealer busted. You win."
-            } else {
-                return "You beat the Dealer"
-            }
+function endOfGame() {
+  if (dscore == 21) {
+    return "The Dealer has 21. You lose!";
+  } else if (dscore > pscore) {
+    return "The Dealer wins.";
+  } else if (dscore > 21) {
+    return "The Dealer busted. You win.";
+  } else if(dscore== pscore) {
+    return "Tie"
+  } else {
+    return "You beat the Dealer";
+  }
 };
+
 //dealer hand >= 17 dealer must stay
 
-
-
-
 // extra stuff if I have time:
-// add split and double down features 
+// add split and double down features
 // start w/ fixed amount of money
-// create chips to bet 
+// create chips to bet
