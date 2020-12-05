@@ -23,7 +23,7 @@ function createDeck() {
         Value: values[i],
         Suit: suits[x],
         Weight: weight,
-        image: `./images${values[i]}${suits[x]}.png`,
+        image: `./cards/${values[i]}${suits[x]}.png`,
       };
       deck.push(card);
     }
@@ -40,10 +40,11 @@ deck.forEach((card, index) => {
   deck[randomIndex], (deck[index] = [deck[index], deck[randomIndex]]);
 });
 const card = deck[0];
+
 //2) create a deal function
+
 window.onload = () => {
   document.querySelector("#start").onclick = () => {
-    console.log("start game");
     startGame();
   };
 };
@@ -55,6 +56,7 @@ function startGame() {
 };
 function setHandforPlayers() {
   for (i = 0; i < 2; i++) {
+    console.log(deck)
     playerHand.push(deck[0]); // add to hit function may need to add a conditional as well
     deck.splice(0, 1);
     dealerHand.push(deck[0]);
@@ -62,11 +64,11 @@ function setHandforPlayers() {
   }
 };
 function dealCards() {
- 
+  console.log(playerHand, dealerHand)
   playerHand.forEach((card, i) => {
     const playerHandCard = document.getElementById(`phand`);
     playerHandCard.innerHTML = "";
-
+    console.log(card);
     addCardImage(playerHandCard, card);
   });
 
@@ -80,20 +82,19 @@ function dealCards() {
 
 function addCardImage(listLocation, card) {
   let img = document.createElement("img");
-  img.src = "cards";
+  img.src = card.image;
   listLocation.appendChild(img);
 };
 
-/*window.onload = () => {
-  document.querySelector("#reset").onclick = () => {
-    console.log("new game");
-    dhand.innerHTML= "";
-    phand.innerHTML= "";
-    dealerHand= [];
-    playerHand=[];
-  };
-};*/
+function newGame () {
+   const resetBtn = document.getElementById('#reset') ;
+   resetBtn.forEach((el)=> el.addEventListener('click',clearBoard()));
 
+}
+function clearBoard (event) {
+    console.log(event.parentNode)
+    event.parentNode.parentNode.remove();
+}
 // suggestion logic:
 //f suggestAMove ()
 //document.getElementById("#suggestion")
@@ -101,7 +102,7 @@ function addCardImage(listLocation, card) {
 //3) create a hit me function
 function hitMe() {
   playerHand.push(card);
-  return sum(card.weight + pscore);
+  return sum(pscore + card.weight);
 }
 
 //4) create a stay function
