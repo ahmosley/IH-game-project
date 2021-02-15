@@ -3,12 +3,13 @@
 //1) build the deck of cards
 const values = [2, 3, 4, 5, 6, 7, 8, 9, 10, "A", "J", "Q", "K"];
 const suits = ["S", "H", "C", "D"];
-const deck = [];
-const playerHand = [];
-const dealerHand = [];
-const pscore = 0;
-const dscore = 0;
+let deck = createDeck();
+let playerHand = [];
+let dealerHand = [];
+let pscore = 0;
+let dscore = 0;
 const img = new Image();
+img.src= '/cards';
 
 // create code for ace to equal 11 at first then one once 11 makes hand over 21
 
@@ -16,34 +17,34 @@ function createDeck() {
   var deck = new Array();
   for (var i = 0; i < values.length; i++) {
     for (var x = 0; x < suits.length; x++) {
-      var weight = parseInt(values[i]);
-      if (values[i] == "J" || values[i] == "Q" || values[i] == "K") weight = 10;
-      if (values[i] == "A") weight = pscore <= 10 ? 11 : 1;
+      var weight = values[i];
+      if (weight == "J" || weight == "Q" || weight == "K") weight = 10;
+      if (weight == "A") weight = 11;
       var card = {
         Value: values[i],
         Suit: suits[x],
         Weight: weight,
-        image: `./images${values[i]}${suits[x]}.png`,
+        image: `./cards/${values[i]}${suits[x]}.png`,
       };
       deck.push(card);
     }
   }
-  console.log(deck);
   return deck;
 };
 let random = () => Math.floor(deck.length * Math.random());
 deck.forEach((card, index) => {
   const randomIndex = random();
-  const randomCard = deck[randomIndex];
-  deck[randomIndex] = card;
-  deck[index] = randomCard;
-  deck[randomIndex], (deck[index] = [deck[index], deck[randomIndex]]);
+  // const randomCard = deck[randomIndex];
+  // deck[randomIndex] = card;
+  // deck[index] = randomCard;
+  [deck[randomIndex], deck[index]] = [deck[index], deck[randomIndex]];
 });
 const card = deck[0];
+
 //2) create a deal function
+
 window.onload = () => {
   document.querySelector("#start").onclick = () => {
-    console.log("start game");
     startGame();
   };
 };
@@ -55,67 +56,89 @@ function startGame() {
 };
 function setHandforPlayers() {
   for (i = 0; i < 2; i++) {
-    playerHand.push(deck[0]); // add to hit function may need to add a conditional as well
-    deck.splice(0, 1);
-    dealerHand.push(deck[0]);
-    deck.splice(0, 1);
+    drawCard(playerHand); // add to hit function may need to add a conditional as well
+    drawCard(dealerHand);
   }
 };
-function dealCards() {
- 
-  playerHand.forEach((card, i) => {
-    const playerHandCard = document.getElementById(`phand`);
-    playerHandCard.innerHTML = "";
 
+function drawCard(hand) {
+  const theCard = deck.splice(0, 1)[0];
+  hand.push(theCard);
+}
+
+function dealCards() {
+  console.log(playerHand, dealerHand)
+  const playerHandCard = document.getElementById(`phand`);
+  playerHandCard.innerHTML = "";
+  pscore = 0;
+  playerHand.forEach((card, i) => {
+    pscore += card.Weight;
     addCardImage(playerHandCard, card);
   });
 
+  const dealerHandCard = document.getElementById(`dhand`);
+  dealerHandCard.innerHTML = "";
+  console.log(dealerHand);
+  dscore = 0;
   dealerHand.forEach((card, i) => {
-    const dealerHandCard = document.getElementById(`dhand`);
-    dealerHandCard.innerHTML = "";
-
+    dscore += card.Weight;
     addCardImage(dealerHandCard, card);
-  });
+  }); 
+  displayScore(dscore, 'dscore');
+  displayScore(pscore, 'pscore');
+
 };
+function displayScore(score, who) {
+  let scoreElement = document.getElementById(who);
+  scoreElement.innerText = score;
+}
 
 function addCardImage(listLocation, card) {
   let img = document.createElement("img");
-  img.src = "cards";
+  img.src = card.image;
+  img.style.height = '100px'
   listLocation.appendChild(img);
 };
 
-/*window.onload = () => {
-  document.querySelector("#reset").onclick = () => {
-    console.log("new game");
-    dhand.innerHTML= "";
-    phand.innerHTML= "";
-    dealerHand= [];
-    playerHand=[];
-  };
-};*/
+document.querySelector('#reset').onclick = () => {
+  let playerHand = [];
+let dealerHand = [];
+let pscore = 0;
+let dscore = 0;
+createDeck();
+};
 
 // suggestion logic:
 //f suggestAMove ()
 //document.getElementById("#suggestion")
 
 //3) create a hit me function
-function hitMe() {
-  playerHand.push(card);
-  return sum(card.weight + pscore);
-}
+document.querySelector("#hit").onclick = () => {
+  drawCard(playerHand);
+  dealCards()
+  playerLoss();
+};
+function playerLoss(){
+  if (pscore > 21)
+  return "Player loses";
+
+};
 
 //4) create a stay function
 
-function stay() {
-  return "Your turn is over. Dealer's turn";
-};
+
+  document.querySelector('#stay').onclick = () => {
+    dealersMove();
+  };
 //then proceed to dealer turn
 
 //4.5) dealer rules
 //dealer hand =< 16- dealer must hit
 function dealersMove() {
-  if (dscore <= 17) {
-    return dealerHand.push(card);
+  if (dscore <= 16) {
+    drawCard(dealerHand);
+    dealCards();
+    dealersMove();
   } else return endOfGame();
 };
 function endOfGame() {
@@ -125,10 +148,13 @@ function endOfGame() {
     return "The Dealer wins.";
   } else if (dscore > 21) {
     return "The Dealer busted. You win.";
+  } else if(dscore== pscore) {
+    return "Tie"
   } else {
     return "You beat the Dealer";
   }
 };
+
 //dealer hand >= 17 dealer must stay
 
 // extra stuff if I have time:
