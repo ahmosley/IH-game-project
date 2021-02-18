@@ -96,16 +96,13 @@ function displayScore(score, who) {
 function addCardImage(listLocation, card) {
   let img = document.createElement("img");
   img.src = card.image;
-  img.style.height = '100px'
+  img.style.height = '125px'
   listLocation.appendChild(img);
 };
 
 document.querySelector('#reset').onclick = () => {
-  let playerHand = [];
-let dealerHand = [];
-let pscore = 0;
-let dscore = 0;
-createDeck();
+  location.reload();
+  return false;
 };
 
 // suggestion logic:
@@ -120,7 +117,7 @@ document.querySelector("#hit").onclick = () => {
 };
 function playerLoss(){
   if (pscore > 21)
-  return "Player loses";
+  alert("Player loses");
 
 };
 
@@ -139,19 +136,19 @@ function dealersMove() {
     drawCard(dealerHand);
     dealCards();
     dealersMove();
-  } else return endOfGame();
+  } else if (dscore > 21) {
+    return alert('Dealer busts'); }
+    else{return endOfGame(); } 
 };
 function endOfGame() {
   if (dscore == 21) {
-    return "The Dealer has 21. You lose!";
+    alert("The Dealer has 21. You lose!");
   } else if (dscore > pscore) {
-    return "The Dealer wins.";
-  } else if (dscore > 21) {
-    return "The Dealer busted. You win.";
+    alert("The Dealer wins.");
   } else if(dscore== pscore) {
-    return "Tie"
+    alert("Tie");
   } else {
-    return "You beat the Dealer";
+    alert ("You beat the Dealer");
   }
 };
 
